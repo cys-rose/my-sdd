@@ -53,54 +53,58 @@
 ## /propose <需求描述> — 创建变更提案
 
 **步骤：**
-1. 探索需求意图，防止方向偏差
+1. 调用 `superpowers:brainstorming` 探索需求意图，防止方向偏差
 2. Research 代码现状（每个结论必须有出处）
 3. 逐个提问澄清（一次只问一个，给选项+推荐）
 4. YAGNI 裁剪
-5. 分三段生成 spec（每段确认）→ 生成 tasks → HARD-GATE 确认
+5. 分三段生成 spec（每段确认）→ HARD-GATE 确认
+6. 确认后调用 `superpowers:writing-plans` 根据 spec 和代码现状生成执行计划，写入 `changes/<变更名>/plan.md`
 
 待澄清全部解决前不允许进入 /apply。
 模板参考：changes/templates/spec.md、changes/templates/tasks.md
 
 ## /apply <变更名> — 执行编码
 
-**前置：** 检查 spec + tasks + 用户确认。
+**前置：** 检查 spec + plan.md + tasks.md 执行前检查 + 用户确认。
 
 **执行规则：**
+- 调用 `superpowers:executing-plans` 按 `plan.md` 逐步执行
 - 零偏差原则：Plan 是合同，AI 是打印机
-- 逐 task 执行，完成每个 task 后必须展示验证证据，确认无误后才能 git commit
+- 完成每个 task 后必须调用 `superpowers:verification-before-completion` 展示验证证据，确认无误后才能 git commit
+- 执行过程中在 `tasks.md` 记录执行跟踪、偏差和验证证据
 - 编译/测试由用户手动执行，AI 仅负责代码变更和 git commit
 - 自动 git commit（一个 task 一个 commit）
-- 若存在多个相互独立的 task，可并行执行以提升效率
+- 若存在多个相互独立的 task，调用 `superpowers:dispatching-parallel-agents` 并行执行以提升效率
 
 ## /fix <变更名> [描述] — Review 后修正迭代
 
-收到 review 反馈后，先结构化分析反馈，再执行修正。
+收到 review 反馈后，先调用 `superpowers:receiving-code-review`结构化分析反馈，再执行修正。
 增量修正 + 文档同步铁律（spec/tasks/log 全部更新）。
 
 ## /review <变更名> — 两阶段审查
 
-执行以下两阶段：
-- 阶段一：Spec Compliance（参考 agents/spec-reviewer.md）
-- 阶段二：Code Quality（参考 agents/code-quality-reviewer.md）
+调用 `superpowers:requesting-code-review` 发起审查，执行以下两阶段：
+- 阶段一：Spec Compliance（参考 `agents/spec-reviewer.md`）
+- 阶段二：Code Quality（参考 `agents/code-quality-reviewer.md`）
 
-上下文隔离执行。阶段一 PASS 后才启动阶段二。
+优先用 Sub Agent 执行，上下文隔离执行。阶段一 PASS 后才启动阶段二。
 
 ## /test <变更名> — 生成单测 Spec 并执行
 
-TDD 流程：
+调用 `superpowers:test-driven-development` 执行 TDD 流程：
 - Red/Green TDD：测试必须先 Red 再 Green，跳过 Red 的测试无效
 - 两种模式：Spec 先行（推荐）或直接生成
-- 模板参考：changes/templates/test-spec.md
+- 模板参考：`changes/templates/test-spec.md`
 
 ## /archive <变更名> — 归档 + 知识沉淀
 
-逐条展示 log.md 知识发现，确认后沉淀到 knowledge/。
+逐条展示 `log.md` 知识发现，确认后沉淀到 `knowledge/`。
+归档完成后调用 `superpowers:finishing-a-development-branch` 决定 merge/PR 方式。。
 
 # Git 规范
 
 1. 禁止 master/main 分支直接变更
-2. 开始新功能前创建独立分支，隔离工作区
+2. 开始新功能前调用 `superpowers:using-git-worktrees` 创建隔离工作区
 3. 每个 task/fix 自动 commit
 4. Commit 必须可编译
 5. 禁止自动 push
@@ -108,7 +112,7 @@ TDD 流程：
 
 # 调试流程
 
-遇到 bug 或测试失败时，按四阶段执行：
+遇到 bug 或测试失败时，先调用 `superpowers:systematic-debugging`，按四阶段执行：
 根因调查 → 模式分析 → 假设验证 → 实施修复。
 禁止在未确认根因前直接改代码。
 

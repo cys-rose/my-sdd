@@ -73,7 +73,8 @@
 2. Research 代码现状（每个结论必须有出处）
 3. 逐个提问澄清（一次只问一个，给选项+推荐）
 4. YAGNI 裁剪
-5. 分三段生成 spec（每段确认）→ 生成 tasks → HARD-GATE 确认
+5. 分三段生成 spec（每段确认）→ HARD-GATE 确认
+6. 确认后调用 `superpowers:writing-plans` 根据 spec 和代码现状生成执行计划，写入 `changes/<变更名>/plan.md`
 
 待澄清全部解决前不允许进入 /apply。
 模板参考：`changes/templates/spec.md`、`changes/templates/tasks.md`
@@ -82,11 +83,13 @@
 
 ### /apply \<变更名\> — 执行编码
 
-**前置：** 检查 spec + tasks + 用户确认。
+**前置：** 检查 spec + plan.md + tasks.md 执行前检查 + 用户确认。
 
 **执行规则：**
+- 调用 `superpowers:executing-plans` 按 `plan.md` 逐步执行
 - 零偏差原则：Plan 是合同，AI 是打印机
-- 逐 task 执行，完成每个 task 后必须调用 `superpowers:verification-before-completion` 展示验证证据，确认无误后才能 git commit
+- 完成每个 task 后必须调用 `superpowers:verification-before-completion` 展示验证证据，确认无误后才能 git commit
+- 执行过程中在 `tasks.md` 记录执行跟踪、偏差和验证证据
 - 编译/测试由用户手动执行，AI 仅负责代码变更和 git commit
 - 自动 git commit（一个 task 一个 commit）
 - 若存在多个相互独立的 task，调用 `superpowers:dispatching-parallel-agents` 并行执行以提升效率
