@@ -68,13 +68,16 @@
 
 ### /propose \<需求描述\> — 创建变更提案
 
+**变更命名规则（强制）：** 变更目录必须命名为 `YYYYMMDD-<kebab-slug>`，其中 `YYYYMMDD` 为创建当日日期，`<kebab-slug>` 为小写英文短横线格式、概括需求的简短标识（例：`20260408-user-login-rate-limit`）。创建目录前必须先向用户确认最终命名。
+
 **步骤：**
 1. 调用 `superpowers:brainstorming` 探索需求意图，防止方向偏差
 2. Research 代码现状（每个结论必须有出处）
 3. 逐个提问澄清（一次只问一个，给选项+推荐）
 4. YAGNI 裁剪
 5. 分三段生成 spec（每段确认）→ HARD-GATE 确认
-6. 确认后调用 `superpowers:writing-plans` 根据 spec 和代码现状生成执行计划，写入 `changes/<变更名>/plan.md`
+6. 与用户确认变更目录名（`YYYYMMDD-<kebab-slug>`）
+7. 确认后调用 `superpowers:writing-plans` 根据 spec 和代码现状生成执行计划，写入 `changes/<变更名>/plan.md`
 
 待澄清全部解决前不允许进入 /apply。
 模板参考：`changes/templates/spec.md`、`changes/templates/tasks.md`
